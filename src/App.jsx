@@ -3,13 +3,11 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import PrivateRoute from "./routes/PrivateRoute";
-
-// Rutas de paciente
 import PatientRoutes from "./components/patient/patientRoutes";
+import MedicoDashboard from "./components/medico/MedicoDashboard";
 
-// (Opcional: más rutas para Admin y Médico)
+// 
 // import AdminDashboard from "./components/admin/AdminDashboard";
-// import MedicoDashboard from "./components/medico/MedicoDashboard";
 
 function App() {
   return (
@@ -28,7 +26,16 @@ function App() {
             </PrivateRoute>
           }
         />
-
+        {/* Private Routes para Médico */}
+        <Route 
+          path="/medico/*"
+          element={
+            <PrivateRoute allowedRoles={["5770e7d5-c449-4094-bbe1-fd52ee6fe75f"]}>
+              <MedicoDashboard />
+            </PrivateRoute>
+          }
+        /> 
+      </Routes>
         {/* Private Routes para Admin */}
         {/* <Route 
           path="/admin/*"
@@ -39,16 +46,7 @@ function App() {
           }
         /> */}
 
-        {/* Private Routes para Médico */}
-        {/* <Route 
-          path="/medico/*"
-          element={
-            <PrivateRoute allowedRoles={["5770e7d5-c449-4094-bbe1-fd52ee6fe75f"]}>
-              <MedicoDashboard />
-            </PrivateRoute>
-          }
-        /> */}
-      </Routes>
+
     </Router>
   );
 }

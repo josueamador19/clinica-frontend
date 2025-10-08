@@ -15,7 +15,7 @@ const PatientDashboard = () => {
           Agendar Cita
         </Link>
         <Link to="/patient/upcoming" className="btn btn-secondary">
-          Ver Citas Futuras
+          Ver Historial de Citas
         </Link>
       </div>
     </div>
