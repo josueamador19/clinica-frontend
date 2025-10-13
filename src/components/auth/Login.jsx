@@ -15,7 +15,6 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setMessage("");
-
     try {
       const formData = new FormData();
       formData.append("email", email);
@@ -26,28 +25,17 @@ const Login = () => {
       });
 
       const { access_token, user } = res.data;
-
-      // Guardar en contexto global
       login(user, access_token);
 
       setMessage(`¡Bienvenido, ${user.nombre}!`);
       setEmail("");
       setPassword("");
 
-      // Redirigir según rol
       switch (user.rol_id) {
-        case "abc856dd-ba5f-41ae-8dea-27aa29f8ab47": // Paciente
-          navigate("/patient");
-          break;
-        case "b20c6894-e11b-41aa-864a-b642b94682c1": // Admin
-          navigate("/admin");
-          break;
-        case "5770e7d5-c449-4094-bbe1-fd52ee6fe75f": // Médico
-          navigate("/medico");
-          break;
-        default:
-          navigate("/login");
-          break;
+        case "abc856dd-ba5f-41ae-8dea-27aa29f8ab47": navigate("/patient"); break;
+        case "b20c6894-e11b-41aa-864a-b642b94682c1": navigate("/admin"); break;
+        case "5770e7d5-c449-4094-bbe1-fd52ee6fe75f": navigate("/medico"); break;
+        default: navigate("/login"); break;
       }
     } catch (err) {
       console.error(err);
@@ -56,45 +44,49 @@ const Login = () => {
   };
 
   return (
-    <div className="container mt-5">
-      <h2>Iniciar Sesión</h2>
-      <form onSubmit={handleLogin}>
-        <div className="mb-3">
-          <label className="form-label">Correo electrónico</label>
-          <input
-            type="email"
-            className="form-control"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Contraseña</label>
-          <div className="input-group">
+    <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
+      <div className="card p-5 shadow-lg" style={{ width: "400px", borderRadius: "15px" }}>
+        <h2 className="text-center mb-4">Iniciar Sesión</h2>
+        <form onSubmit={handleLogin}>
+          <div className="mb-3">
+            <label className="form-label">Correo electrónico</label>
             <input
-              type={showPassword ? "text" : "password"}
+              type="email"
               className="form-control"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
+              placeholder="ejemplo@gmail.com"
             />
-            <span
-              className="input-group-text"
-              style={{ cursor: "pointer" }}
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
-            </span>
           </div>
-        </div>
 
-        <button type="submit" className="btn btn-success">
-          Ingresar
-        </button>
-      </form>
-      {message && <p className="mt-3">{message}</p>}
+          <div className="mb-3">
+            <label className="form-label">Contraseña</label>
+            <div className="input-group">
+              <input
+                type={showPassword ? "text" : "password"}
+                className="form-control"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="********"
+              />
+              <span
+                className="input-group-text"
+                style={{ cursor: "pointer" }}
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+              </span>
+            </div>
+          </div>
+
+          <button type="submit" className="btn btn-primary w-100 mt-3" style={{ borderRadius: "10px" }}>
+            Ingresar
+          </button>
+        </form>
+        {message && <p className="mt-3 text-center text-danger">{message}</p>}
+      </div>
     </div>
   );
 };

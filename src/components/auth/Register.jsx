@@ -9,8 +9,8 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [passwordStrength, setPasswordStrength] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [rol, setRol] = useState("");        
-  const [sucursal, setSucursal] = useState(""); 
+  const [rol, setRol] = useState("");
+  const [sucursal, setSucursal] = useState("");
   const [telefono, setTelefono] = useState("");
   const [foto, setFoto] = useState(null);
   const [message, setMessage] = useState("");
@@ -23,18 +23,14 @@ const Register = () => {
         const res = await axios.get("http://localhost:8000/roles");
         setRolesOptions(res.data);
         if (res.data.length > 0) setRol(res.data[0].id);
-      } catch (err) {
-        console.error(err);
-      }
+      } catch (err) { console.error(err); }
     };
     const fetchSucursales = async () => {
       try {
         const res = await axios.get("http://localhost:8000/sucursales");
         setSucursalesOptions(res.data);
         if (res.data.length > 0) setSucursal(res.data[0].id);
-      } catch (err) {
-        console.error(err);
-      }
+      } catch (err) { console.error(err); }
     };
     fetchRoles();
     fetchSucursales();
@@ -84,51 +80,73 @@ const Register = () => {
   };
 
   return (
-    <div className="container mt-5">
-      <h2>Registro</h2>
-      <form onSubmit={handleRegister}>
-        <div className="mb-3">
-          <label>Nombre completo</label>
-          <input type="text" className="form-control" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
-        </div>
-        <div className="mb-3">
-          <label>Correo electrónico</label>
-          <input type="email" className={`form-control ${!emailValid && "is-invalid"}`} value={email} onChange={(e) => setEmail(e.target.value)} required />
-          {!emailValid && <div className="invalid-feedback">Correo inválido</div>}
-        </div>
-        <div className="mb-3">
-          <label>Contraseña</label>
-          <div className="input-group">
-            <input type={showPassword ? "text" : "password"} className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required />
-            <span className="input-group-text" style={{ cursor: "pointer" }} onClick={() => setShowPassword(!showPassword)}>
-              {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
-            </span>
+    <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
+      <div className="card p-5 shadow-lg" style={{ width: "500px", borderRadius: "15px" }}>
+        <h2 className="text-center mb-4">Registro</h2>
+        <form onSubmit={handleRegister}>
+          {/* Nombre */}
+          <div className="mb-3">
+            <label>Nombre completo</label>
+            <input type="text" className="form-control" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
           </div>
-          {passwordStrength && <small className="text-muted">Contraseña: {passwordStrength}</small>}
-        </div>
-        <div className="mb-3">
-          <label>Rol</label>
-          <select className="form-select" value={rol} onChange={(e) => setRol(e.target.value)} required>
-            {rolesOptions.map((r) => <option key={r.id} value={r.id}>{r.nombre}</option>)}
-          </select>
-        </div>
-        <div className="mb-3">
-          <label>Sucursal</label>
-          <select className="form-select" value={sucursal} onChange={(e) => setSucursal(e.target.value)} required>
-            {sucursalesOptions.map((s) => <option key={s.id} value={s.id}>{s.nombre}</option>)}
-          </select>
-        </div>
-        <div className="mb-3">
-          <label>Teléfono</label>
-          <input type="text" className="form-control" value={telefono} onChange={(e) => setTelefono(e.target.value)} />
-        </div>
-        <div className="mb-3">
-          <label>Foto</label>
-          <input type="file" className="form-control" onChange={(e) => setFoto(e.target.files[0])} accept="image/*" />
-        </div>
-        <button type="submit" className="btn btn-primary">Registrarse</button>
-      </form>
-      {message && <p className="mt-3">{message}</p>}
+
+          {/* Email */}
+          <div className="mb-3">
+            <label>Correo electrónico</label>
+            <input
+              type="email"
+              className={`form-control ${!emailValid && "is-invalid"}`}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            {!emailValid && <div className="invalid-feedback">Correo inválido</div>}
+          </div>
+
+          {/* Contraseña */}
+          <div className="mb-3">
+            <label>Contraseña</label>
+            <div className="input-group">
+              <input type={showPassword ? "text" : "password"} className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required />
+              <span className="input-group-text" style={{ cursor: "pointer" }} onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+              </span>
+            </div>
+            {passwordStrength && <small className="text-muted">Contraseña: {passwordStrength}</small>}
+          </div>
+
+          {/* Rol y Sucursal */}
+          <div className="row">
+            <div className="mb-3 col">
+              <label>Rol</label>
+              <select className="form-select" value={rol} onChange={(e) => setRol(e.target.value)} required>
+                {rolesOptions.map((r) => <option key={r.id} value={r.id}>{r.nombre}</option>)}
+              </select>
+            </div>
+            <div className="mb-3 col">
+              <label>Sucursal</label>
+              <select className="form-select" value={sucursal} onChange={(e) => setSucursal(e.target.value)} required>
+                {sucursalesOptions.map((s) => <option key={s.id} value={s.id}>{s.nombre}</option>)}
+              </select>
+            </div>
+          </div>
+
+          {/* Teléfono */}
+          <div className="mb-3">
+            <label>Teléfono</label>
+            <input type="text" className="form-control" value={telefono} onChange={(e) => setTelefono(e.target.value)} />
+          </div>
+
+          {/* Foto */}
+          <div className="mb-3">
+            <label>Foto</label>
+            <input type="file" className="form-control" onChange={(e) => setFoto(e.target.files[0])} accept="image/*" />
+          </div>
+
+          <button type="submit" className="btn btn-success w-100 mt-3" style={{ borderRadius: "10px" }}>Registrarse</button>
+        </form>
+        {message && <p className="mt-3 text-center text-danger">{message}</p>}
+      </div>
     </div>
   );
 };
