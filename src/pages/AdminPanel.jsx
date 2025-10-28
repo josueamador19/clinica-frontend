@@ -1,14 +1,24 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { motion } from "framer-motion";
-import { CalendarDays, Users, Stethoscope } from "lucide-react";
+import { CalendarDays, Users, Stethoscope, LogOut } from "lucide-react";
 import AdminCitas from "../components/admin/AdminAppointments";
 import AdminPacientes from "../components/admin/AdminPatients";
 import AdminMedicos from "../components/admin/AdminMedicos";
 import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { Button } from "react-bootstrap";
 
 const AdminPanel = () => {
     const [vista, setVista] = useState("citas");
-    const { user } = useContext(AuthContext); // Traemos info del usuario logueado
+    const { user, logout } = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    // Redirige al login si no hay sesión
+    useEffect(() => {
+        if (!user) {
+            navigate("/login");
+        }
+    }, [user, navigate]);
 
     const renderVista = () => {
         switch (vista) {
@@ -21,6 +31,11 @@ const AdminPanel = () => {
             default:
                 return <AdminCitas />;
         }
+    };
+
+    const handleLogout = () => {
+        logout();
+        navigate("/login");
     };
 
     return (
@@ -52,31 +67,42 @@ const AdminPanel = () => {
                         </h2>
                     </div>
 
-                    <div className="btn-group" role="group">
-                        <button
-                            className={`btn ${vista === "citas" ? "btn-primary text-white" : "btn-outline-primary"
-                                } rounded-pill px-4 me-2 d-flex align-items-center gap-2`}
-                            onClick={() => setVista("citas")}
+                    <div className="d-flex align-items-center gap-3 mt-3 mt-md-0">
+                        <div className="btn-group me-2" role="group">
+                            <button
+                                className={`btn ${vista === "citas" ? "btn-primary text-white" : "btn-outline-primary"
+                                    } rounded-pill px-4 me-2 d-flex align-items-center gap-2`}
+                                onClick={() => setVista("citas")}
+                            >
+                                <CalendarDays size={18} />
+                                Citas
+                            </button>
+                            <button
+                                className={`btn ${vista === "pacientes" ? "btn-success text-white" : "btn-outline-success"
+                                    } rounded-pill px-4 me-2 d-flex align-items-center gap-2`}
+                                onClick={() => setVista("pacientes")}
+                            >
+                                <Users size={18} />
+                                Pacientes
+                            </button>
+                            <button
+                                className={`btn ${vista === "medicos" ? "btn-info text-white" : "btn-outline-info"
+                                    } rounded-pill px-4 d-flex align-items-center gap-2`}
+                                onClick={() => setVista("medicos")}
+                            >
+                                <Stethoscope size={18} />
+                                Médicos
+                            </button>
+                        </div>
+
+                        <Button
+                            variant="outline-danger"
+                            className="rounded-pill d-flex align-items-center gap-2"
+                            onClick={handleLogout}
                         >
-                            <CalendarDays size={18} />
-                            Citas
-                        </button>
-                        <button
-                            className={`btn ${vista === "pacientes" ? "btn-success text-white" : "btn-outline-success"
-                                } rounded-pill px-4 me-2 d-flex align-items-center gap-2`}
-                            onClick={() => setVista("pacientes")}
-                        >
-                            <Users size={18} />
-                            Pacientes
-                        </button>
-                        <button
-                            className={`btn ${vista === "medicos" ? "btn-info text-white" : "btn-outline-info"
-                                } rounded-pill px-4 d-flex align-items-center gap-2`}
-                            onClick={() => setVista("medicos")}
-                        >
-                            <Stethoscope size={18} />
-                            Médicos
-                        </button>
+                            <LogOut size={18} />
+                            Cerrar sesión
+                        </Button>
                     </div>
                 </div>
             </motion.div>

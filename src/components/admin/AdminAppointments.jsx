@@ -12,6 +12,7 @@ const AdminAppointments = () => {
   const [citaSeleccionada, setCitaSeleccionada] = useState(null);
   const [medicos, setMedicos] = useState([]);
   const [sucursales, setSucursales] = useState([]);
+  const [horasDisponibles, setHorasDisponibles] = useState([]);
   const [formData, setFormData] = useState({
     medico_id: "",
     sucursal_id: "",
@@ -37,9 +38,11 @@ const AdminAppointments = () => {
         setCitas(citasRes.data);
         setMedicos(medicosRes.data);
 
-        // Extraer sucursales únicas de las citas
+        // Extraer sucursales únicas
         const sucursalesUnicas = [
-          ...new Map(citasRes.data.map((c) => [c.sucursal, { id: c.sucursal, nombre: c.sucursal }])).values()
+          ...new Map(
+            citasRes.data.map((c) => [c.sucursal, { id: c.sucursal, nombre: c.sucursal }])
+          ).values(),
         ];
         setSucursales(sucursalesUnicas);
       } catch (err) {
@@ -56,42 +59,86 @@ const AdminAppointments = () => {
     setCitaSeleccionada(cita);
     setFormData({
       medico_id: cita.medico_id,
-      sucursal_id: cita.sucursal_id,
+      sucursal_id: "",
       fecha: cita.fecha,
-      hora: cita.hora,
+      hora: "",
     });
+    setHorasDisponibles([]);
     setShowModal(true);
+
+    // Obtener horas disponibles al abrir modal
+    fetchDisponibilidad(cita.medico_id, cita.fecha);
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
     setCitaSeleccionada(null);
     setFormData({ medico_id: "", sucursal_id: "", fecha: "", hora: "" });
+    setHorasDisponibles([]);
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleReagendar = async () => {
-    if (!formData.fecha || !formData.hora || !formData.sucursal_id) {
-      alert("Por favor seleccione sucursal, fecha y hora.");
+  const fetchDisponibilidad = async (medico_id, fecha) => {
+    if (!medico_id || !fecha) {
+      setHorasDisponibles([]);
       return;
     }
 
     try {
+      const res = await axios.get(`${backendUrl}/admin/medicos/${medico_id}/disponibilidad`, {
+        params: { fecha },
+      });
+
+      setHorasDisponibles(res.data);
+    } catch (err) {
+      console.error("Error al obtener disponibilidad admin:", err);
+      setHorasDisponibles([]);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    const newFormData = { ...formData, [name]: value };
+    setFormData(newFormData);
+
+    if (name === "medico_id" || name === "fecha") {
+      fetchDisponibilidad(
+        name === "medico_id" ? value : newFormData.medico_id,
+        name === "fecha" ? value : newFormData.fecha
+      );
+      setFormData({ ...newFormData, sucursal_id: "", hora: "" });
+    }
+
+    if (name === "sucursal_id") {
+      setFormData({ ...newFormData, hora: "" });
+    }
+  };
+
+  const handleReagendar = async () => {
+    if (!formData.fecha || !formData.hora || !formData.sucursal_id || !formData.medico_id) {
+      alert("Por favor seleccione médico, sucursal, fecha y hora.");
+      return;
+    }
+
+    try {
+      // Convertir hora a formato HH:MM:SS
+      const horaFormateada = formData.hora.includes(":") ? formData.hora + ":00" : formData.hora;
+
       const res = await axios.patch(
         `${backendUrl}/citas/${citaSeleccionada.id}/reagendar`,
         null,
-        { params: formData }
+        {
+          params: {
+            fecha: formData.fecha,
+            hora: horaFormateada,
+            sucursal_id: formData.sucursal_id,
+          },
+        }
       );
 
       setCitas((prev) =>
-        prev.map((c) =>
-          c.id === citaSeleccionada.id ? { ...c, ...res.data.cita } : c
-        )
+        prev.map((c) => (c.id === citaSeleccionada.id ? res.data.cita : c))
       );
+
       handleCloseModal();
       alert("✅ Cita reagendada correctamente");
     } catch (err) {
@@ -130,14 +177,14 @@ const AdminAppointments = () => {
     );
   }
 
-  // Filtrar citas
-  const citasFiltradas = citas.filter((cita) =>
-    (filterPaciente ? cita.paciente === filterPaciente : true) &&
-    (filterMedico ? cita.medico === filterMedico : true) &&
-    (filterSucursal ? cita.sucursal === filterSucursal : true)
+  // Filtrado de citas
+  const citasFiltradas = citas.filter(
+    (cita) =>
+      (filterPaciente ? cita.paciente === filterPaciente : true) &&
+      (filterMedico ? cita.medico === filterMedico : true) &&
+      (filterSucursal ? cita.sucursal === filterSucursal : true)
   );
 
-  // Obtener pacientes únicos para el select de filtro
   const pacientesUnicos = [...new Set(citas.map((c) => c.paciente))];
 
   return (
@@ -157,7 +204,9 @@ const AdminAppointments = () => {
           >
             <option value="">Todos los pacientes</option>
             {pacientesUnicos.map((p, i) => (
-              <option key={i} value={p}>{p}</option>
+              <option key={i} value={p}>
+                {p}
+              </option>
             ))}
           </select>
         </div>
@@ -169,7 +218,9 @@ const AdminAppointments = () => {
           >
             <option value="">Todos los médicos</option>
             {medicos.map((m) => (
-              <option key={m.id} value={m.nombre}>{m.nombre}</option>
+              <option key={m.id} value={m.id}>
+                {m.nombre}
+              </option>
             ))}
           </select>
         </div>
@@ -181,7 +232,9 @@ const AdminAppointments = () => {
           >
             <option value="">Todas las sucursales</option>
             {sucursales.map((s) => (
-              <option key={s.id} value={s.nombre}>{s.nombre}</option>
+              <option key={s.id} value={s.id}>
+                {s.nombre}
+              </option>
             ))}
           </select>
         </div>
@@ -249,72 +302,82 @@ const AdminAppointments = () => {
         ))}
       </div>
 
-      {/* Modal Reagendar */}
-      <Modal show={showModal} onHide={handleCloseModal} centered>
+      {/* Modal para reagendar */}
+      <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
           <Modal.Title>Reagendar Cita</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {citaSeleccionada && (
-            <Form>
-              <Form.Group className="mb-3">
-                <Form.Label>Paciente</Form.Label>
-                <Form.Control type="text" value={citaSeleccionada.paciente} readOnly />
-              </Form.Group>
+          <Form>
+            <Form.Group className="mb-2">
+              <Form.Label>Médico</Form.Label>
+              <Form.Select
+                name="medico_id"
+                value={formData.medico_id}
+                onChange={handleChange}
+              >
+                <option value="">Selecciona un médico</option>
+                {medicos.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.nombre}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
 
-              <Form.Group className="mb-3">
-                <Form.Label>Médico</Form.Label>
-                <Form.Select
-                  name="medico_id"
-                  value={formData.medico_id}
-                  onChange={handleChange}
-                >
-                  <option value="">Seleccione un médico</option>
-                  {medicos.map((m) => (
-                    <option key={m.id} value={m.id}>{m.nombre}</option>
+            <Form.Group className="mb-2">
+              <Form.Label>Fecha</Form.Label>
+              <Form.Control
+                type="date"
+                name="fecha"
+                value={formData.fecha}
+                onChange={handleChange}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-2">
+              <Form.Label>Sucursal</Form.Label>
+              <Form.Select
+                name="sucursal_id"
+                value={formData.sucursal_id}
+                onChange={handleChange}
+              >
+                <option value="">Selecciona una sucursal</option>
+                {horasDisponibles.map((d, i) => (
+                  <option key={i} value={d.sucursal_id}>
+                    {d.sucursal_nombre}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+
+            <Form.Group className="mb-2">
+              <Form.Label>Hora</Form.Label>
+              <Form.Select
+                name="hora"
+                value={formData.hora}
+                onChange={handleChange}
+              >
+                <option value="">Selecciona una hora</option>
+                {horasDisponibles
+                  .filter((d) => d.sucursal_id === formData.sucursal_id)
+                  .flatMap((d) => d.horas_disponibles)
+                  .map((h, i) => (
+                    <option key={i} value={h}>
+                      {h}
+                    </option>
                   ))}
-                </Form.Select>
-              </Form.Group>
-
-              <Form.Group className="mb-3">
-                <Form.Label>Sucursal</Form.Label>
-                <Form.Select
-                  name="sucursal_id"
-                  value={formData.sucursal_id}
-                  onChange={handleChange}
-                >
-                  <option value="">Seleccione una sucursal</option>
-                  {sucursales.map((s) => (
-                    <option key={s.id} value={s.id}>{s.nombre}</option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
-
-              <Form.Group className="mb-3">
-                <Form.Label>Fecha</Form.Label>
-                <Form.Control
-                  type="date"
-                  name="fecha"
-                  value={formData.fecha}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-3">
-                <Form.Label>Hora</Form.Label>
-                <Form.Control
-                  type="time"
-                  name="hora"
-                  value={formData.hora}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-            </Form>
-          )}
+              </Form.Select>
+            </Form.Group>
+          </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>Cancelar</Button>
-          <Button variant="primary" onClick={handleReagendar}>Guardar cambios</Button>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Cancelar
+          </Button>
+          <Button variant="primary" onClick={handleReagendar}>
+            Reagendar
+          </Button>
         </Modal.Footer>
       </Modal>
     </motion.div>

@@ -6,13 +6,13 @@ import MedicoPanel from "./pages/MedicoPanel";
 import AuthPage from "./pages/AuthPage";
 import AdminPanel from "./pages/AdminPanel";
 import LandingPage from "./pages/LandingPage";
-// import AdminDashboard from "./components/admin/AdminDashboard";
+
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/*Ruta pública principal (Login / Registro en la misma página) */}
+        
         <Route path="/" element={<LandingPage/>} />
         <Route path="/auth" element={<AuthPage />} />
 

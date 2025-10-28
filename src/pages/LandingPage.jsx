@@ -1,154 +1,163 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+
 const LandingPage = () => {
+    const [showDoctors, setShowDoctors] = useState(false);
+    const [doctors, setDoctors] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    const fetchDoctors = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch(`${backendUrl}/medicos`);
+            if (!response.ok) throw new Error("Error al obtener los médicos");
+            const data = await response.json();
+            setDoctors(data); 
+        } catch (error) {
+            console.error("Error al obtener los médicos:", error);
+            setDoctors([]);
+        } finally {
+            setLoading(false);
+            setShowDoctors(true);
+        }
+    };
+
+    const cardStyle = {
+        backgroundColor: "#ffffff",
+        borderRadius: "12px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+        padding: "40px",
+        maxWidth: "700px",
+        margin: "50px auto",
+        textAlign: "center",
+        color: "#2c3e50",
+    };
+
+    const buttonPrimary = {
+        width: "100%",
+        padding: "12px",
+        borderRadius: "8px",
+        fontWeight: "600",
+        backgroundColor: "#4e73df",
+        borderColor: "#4e73df",
+        color: "#fff",
+        marginBottom: "10px",
+    };
+
+    const buttonSecondary = {
+        width: "100%",
+        padding: "12px",
+        borderRadius: "8px",
+        fontWeight: "600",
+        backgroundColor: "#1cc88a",
+        borderColor: "#1cc88a",
+        color: "#fff",
+        marginBottom: "10px",
+    };
+
     return (
-        <div className="bg-light text-dark">
+        <div style={{ backgroundColor: "#f1f3f6", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
             {/* NAVBAR */}
-            <nav className="navbar navbar-expand-lg navbar-dark py-3 shadow sticky-top" style={{ backgroundColor: "#0aa4a4" }}>
-                <div className="container">
-                    <a className="navbar-brand fw-semibold d-flex align-items-center" href="#">
+            <nav className="navbar py-3 shadow sticky-top" style={{ backgroundColor: "#4e73df" }}>
+                <div className="container d-flex justify-content-between align-items-center">
+                    <a className="navbar-brand fw-semibold d-flex align-items-center text-white" href="#">
                         <i className="fa-solid fa-prescription-bottle-medical me-2"></i>
-                        Buena&nbsp;Salud
+                        Gestion de Citas
                     </a>
-
-                    <button
-                        className="navbar-toggler"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#navbarNav"
-                        aria-controls="navbarNav"
-                        aria-expanded="false"
-                        aria-label="Toggle navigation"
-                    >
-                        <i className="fa-solid fa-bars"></i>
-                    </button>
-
-                    <div className="collapse navbar-collapse" id="navbarNav">
-                        {/* Buscador */}
-                        <form className="d-flex ms-auto me-3">
-                            <input
-                                className="form-control rounded-pill me-2"
-                                type="search"
-                                placeholder="Buscar…"
-                                aria-label="Buscar"
-                                style={{ maxWidth: "250px" }}
-                            />
-                            <button className="btn btn-secondary rounded-pill" type="submit">
-                                <i className="fa-solid fa-magnifying-glass"></i>
-                            </button>
-                        </form>
-
-                        {/* Links */}
-                        <ul className="navbar-nav mb-2 mb-lg-0 d-flex align-items-center">
-                            <li className="nav-item mx-1">
-                                <a className="nav-link text-white fw-medium" href="#hero">
-                                    <i className="fa-solid fa-house me-1"></i>Inicio
-                                </a>
-                            </li>
-                            <li className="nav-item mx-1">
-                                <a className="nav-link text-white fw-medium" href="#servicios">
-                                    <i className="fa-solid fa-hand-holding-medical me-1"></i>Servicio
-                                </a>
-                            </li>
-                            <li className="nav-item mx-1">
-                                <a className="nav-link text-white fw-medium" href="#planes">
-                                    <i className="fa-solid fa-file-medical me-1"></i>Plan Médico
-                                </a>
-                            </li>
-                            <li className="nav-item mx-1">
-                                <a className="nav-link text-white fw-medium" href="#especialistas">
-                                    <i className="fa-solid fa-user-doctor me-1"></i>Especialista
-                                </a>
-                            </li>
-                            <li className="nav-item mx-1">
-                                <Link to="/auth" className="btn btn-warning fw-semibold rounded-pill">
-                                    <i className="fa-solid fa-right-to-bracket me-1"></i>Acceder
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
                 </div>
             </nav>
 
             {/* HERO */}
-            <section
-                id="hero"
-                className="text-center text-white d-flex flex-column justify-content-center align-items-center py-5 position-relative"
-                style={{
-                    background: "linear-gradient(135deg, #0aa4a4, #036b6b)",
-                    minHeight: "65vh",
-                }}
-            >
-                <div className="container py-5">
-                    <h1 className="display-5 fw-bold">
-                        Farmacia <span className="text-warning">Buena Salud</span>
-                    </h1>
-                    <p className="lead mb-4">
-                        Más de 20 años cuidando de ti y tu familia ― siempre cerca, siempre confiables.
-                    </p>
-                    <a href="#servicios" className="btn btn-light fw-semibold rounded-pill px-4 py-2 shadow-sm">
-                        Conoce nuestros servicios
-                    </a>
-                </div>
+            <section style={cardStyle}>
+                <h1 style={{ fontSize: "2rem", fontWeight: "700", marginBottom: "20px" }}>
+                    Plataforma de Gestión de Citas
+                </h1>
+                <p style={{ fontSize: "1.1rem", lineHeight: "1.6", marginBottom: "30px" }}>
+                    Esta plataforma te ayuda a gestionar tus citas, tiene 3 módulos: paciente, médico y administrador. 
+                    Se maneja en 2 sucursales distintas y los médicos tienen horarios en cada sucursal. 
+                    Si quieres acceder a ella, debes iniciar sesión.
+                </p>
+                <Link to="/auth" className="btn" style={buttonPrimary}>
+                    Iniciar Sesión
+                </Link>
+
+                <button
+                    className="btn"
+                    style={buttonSecondary}
+                    onClick={fetchDoctors}
+                >
+                    Ver Médicos Activos
+                </button>
             </section>
 
-            {/* SERVICIOS */}
-            <section id="servicios" className="container py-5">
-                <h2 className="text-center mb-5 fw-bold text-secondary">Nuestros Servicios</h2>
-                <div className="row g-4">
-                    {[
-                        { icon: "pills", title: "Dispensación 24/7", text: "Medicamentos genéricos y de marca a precios accesibles con asesoría farmacéutica." },
-                        { icon: "truck-medical", title: "Entrega a domicilio", text: "Cubrimos toda el área metropolitana en menos de 60 minutos." },
-                        { icon: "syringe", title: "Hemograma", text: "Programa completo para adultos y niños, sin cita previa." },
-                        { icon: "heart-pulse", title: "Planes Médicos", text: "Suscripciones mensuales que incluyen check-ups, telemedicina y descuentos." },
-                        { icon: "stethoscope", title: "Especialistas", text: "Red de médicos certificados disponibles para consulta presencial u online." },
-                    ].map((card, i) => (
-                        <div className="col-sm-6 col-lg-4" key={i}>
-                            <div className="card h-100 text-center border-0 shadow-sm p-4">
-                                <i className={`fa-solid fa-${card.icon} fs-2 text-primary mb-3`}></i>
-                                <h5 className="fw-semibold text-secondary mb-2">{card.title}</h5>
-                                <p className="small text-muted">{card.text}</p>
+            {/* MODAL DE MÉDICOS */}
+            {showDoctors && (
+                <div
+                    className="modal show d-block"
+                    tabIndex="-1"
+                    role="dialog"
+                    onClick={() => setShowDoctors(false)}
+                    style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+                >
+                    <div
+                        className="modal-dialog modal-dialog-centered modal-lg"
+                        role="document"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="modal-content">
+                            <div className="modal-header" style={{ backgroundColor: "#4e73df", color: "#fff" }}>
+                                <h5 className="modal-title">Médicos Activos</h5>
+                                <button type="button" className="btn-close btn-close-white" onClick={() => setShowDoctors(false)}></button>
+                            </div>
+                            <div className="modal-body">
+                                {loading ? (
+                                    <p>Cargando médicos...</p>
+                                ) : doctors.length === 0 ? (
+                                    <p>No hay médicos activos.</p>
+                                ) : (
+                                    <div className="row g-3">
+                                        {doctors.map((doc) => (
+                                            <div className="col-sm-6 col-md-4" key={doc.id}>
+                                                <div className="card shadow-sm h-100 text-center" style={{ borderRadius: "12px" }}>
+                                                    {doc.foto_url ? (
+                                                        <img 
+                                                            src={doc.foto_url} 
+                                                            alt={doc.nombre} 
+                                                            className="card-img-top"
+                                                            style={{ height: "180px", objectFit: "cover", borderTopLeftRadius: "12px", borderTopRightRadius: "12px" }}
+                                                        />
+                                                    ) : (
+                                                        <div style={{ height: "180px", backgroundColor: "#1cc88a", display: "flex", alignItems: "center", justifyContent: "center", borderTopLeftRadius: "12px", borderTopRightRadius: "12px", color: "#fff" }}>
+                                                            Sin Foto
+                                                        </div>
+                                                    )}
+                                                    <div className="card-body">
+                                                        <h6 className="card-title fw-bold">{doc.nombre}</h6>
+                                                        <p className="card-text small">{doc.email}</p>
+                                                        <p className="card-text small">{doc.telefono}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" onClick={() => setShowDoctors(false)}>
+                                    Cerrar
+                                </button>
                             </div>
                         </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* SOBRE LA FARMACIA */}
-            <section className="bg-white py-5">
-                <div className="container text-center">
-                    <h2 className="fw-bold text-secondary mb-3">¿Quiénes somos?</h2>
-                    <p className="mx-auto" style={{ maxWidth: "850px" }}>
-                        Buena&nbsp;Salud es una cadena de farmacias hondureña fundada en 2003. Nuestro objetivo es brindar accesibilidad a la salud mediante un servicio
-                        rápido, profesional y humano. Nos especializamos en medicamentos de alta calidad, programas de adherencia terapéutica y soluciones de tele-salud.
-                    </p>
-                </div>
-            </section>
-
-            {/* UBICACIÓN */}
-            <section className="bg-light py-5">
-                <div className="container text-center">
-                    <h2 className="fw-bold text-secondary mb-3">Encuéntranos</h2>
-                    <p className="mx-auto" style={{ maxWidth: "850px" }}>
-                        Estamos en el corazón de Tegucigalpa, Col. Palmira, a dos cuadras del Parque Redondel.
-                    </p>
-                    <div className="ratio ratio-16x9 shadow rounded-4 mt-4 mx-auto" style={{ maxWidth: "850px" }}>
-                        <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m18!..."
-                            title="Ubicación Farmacia Buena Salud"
-                            allowFullScreen
-                            loading="lazy"
-                            referrerPolicy="no-referrer-when-downgrade"
-                        ></iframe>
                     </div>
                 </div>
-            </section>
+            )}
 
             {/* FOOTER */}
-            <footer className="text-center text-white py-3" style={{ backgroundColor: "#036b6b" }}>
-                <small>&copy; 2025 Farmacia Buena Salud &middot; Todos los derechos reservados</small>
+            <footer className="text-center py-3 mt-auto" style={{ backgroundColor: "#1cc88a", color: "#fff" }}>
+                <small>&copy; 2025 Gerencia Informatica  </small>
             </footer>
         </div>
     );

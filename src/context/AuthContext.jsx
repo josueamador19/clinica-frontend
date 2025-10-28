@@ -5,22 +5,25 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
+  const [loading, setLoading] = useState(true); // <--- nuevo
 
   useEffect(() => {
-    // Cargar datos de sesión desde localStorage al iniciar la app
     const storedToken = localStorage.getItem("access_token");
     const storedUser = localStorage.getItem("user");
+
     if (storedToken && storedUser) {
       setToken(storedToken);
       setUser(JSON.parse(storedUser));
     }
+    setLoading(false); // <--- carga completa
   }, []);
 
-  const login = (userData, accessToken) => {
+  const login = (userData, accessToken, expiration) => {
     setUser(userData);
     setToken(accessToken);
     localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("access_token", accessToken);
+    if (expiration) localStorage.setItem("token_expiration", expiration);
   };
 
   const logout = () => {
@@ -28,10 +31,11 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem("user");
     localStorage.removeItem("access_token");
+    localStorage.removeItem("token_expiration");
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ user, token, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

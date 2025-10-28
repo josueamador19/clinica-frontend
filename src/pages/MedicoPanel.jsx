@@ -1,20 +1,31 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import MedicoUpcomingAppointments from "../components/medico/MedicoUpcomingAppointments";
 import MedicoHistoryAppointments from "../components/medico/MedicoHistoryAppointments";
+import { useNavigate } from "react-router-dom";
 
 const MedicoPanel = () => {
-    const { user } = useContext(AuthContext);
+    const { user, logout } = useContext(AuthContext);
     const [vista, setVista] = useState("pendientes");
+    const navigate = useNavigate();
 
-    // Paleta de colores: azul oscuro y verde
+    // Redirige al login si no hay usuario
+    useEffect(() => {
+        if (!user) {
+            navigate("/login");
+        }
+    }, [user, navigate]);
+
+    const handleLogout = () => {
+        logout();
+        navigate("/login");
+    };
+
+    // Paleta de colores
     const colors = {
-        primary: "#0d6efd", // azul
-        secondary: "#6c757d", // gris
-        success: "#198754", // verde
-        danger: "#dc3545", // rojo
-        warning: "#ffc107", // amarillo
-        background: "#f8f9fa", // fondo general
+        primary: "#0d6efd",
+        success: "#198754",
+        background: "#f8f9fa",
     };
 
     return (
@@ -25,32 +36,40 @@ const MedicoPanel = () => {
                 fontFamily: "Arial, sans-serif",
             }}
         >
-            <div className="container">
-                <h2 className="mb-4" style={{ color: colors.primary }}>
-                    Bienvenido, Dr. {user.nombre}
+            {/* Encabezado */}
+            <div className="container d-flex justify-content-between align-items-center mb-4">
+                <h2 className="mb-0" style={{ color: colors.primary }}>
+                    Bienvenido, Dr. {user?.nombre}
                 </h2>
+                <button className="btn btn-outline-danger" onClick={handleLogout}>
+                    Cerrar Sesión
+                </button>
+            </div>
 
-                {/* Botones de cambio de vista */}
-                <div className="mb-4 d-flex flex-wrap gap-2">
-                    <button
-                        className={`btn ${vista === "pendientes" ? "btn-primary" : "btn-outline-primary"}`}
-                        onClick={() => setVista("pendientes")}
-                    >
-                        Citas Pendientes
-                    </button>
-                    <button
-                        className={`btn ${vista === "historial" ? "btn-success" : "btn-outline-success"}`}
-                        onClick={() => setVista("historial")}
-                    >
-                        Historial de Citas
-                    </button>
-                </div>
+            {/* Botones de cambio de vista */}
+            <div className="mb-4 d-flex flex-wrap gap-2">
+                <button
+                    className={`btn ${vista === "pendientes" ? "btn-primary" : "btn-outline-primary"}`}
+                    onClick={() => setVista("pendientes")}
+                >
+                    Citas Pendientes
+                </button>
+                <button
+                    className={`btn ${vista === "historial" ? "btn-success" : "btn-outline-success"}`}
+                    onClick={() => setVista("historial")}
+                >
+                    Historial de Citas
+                </button>
+            </div>
 
-                {/* Contenido dinámico según la vista */}
-                <div>
-                    {vista === "pendientes" && <MedicoUpcomingAppointments medicoId={user.id} />}
-                    {vista === "historial" && <MedicoHistoryAppointments medicoId={user.id} />}
-                </div>
+            {/* Contenido dinámico */}
+            <div>
+                {vista === "pendientes" && user && (
+                    <MedicoUpcomingAppointments medicoId={user.id} />
+                )}
+                {vista === "historial" && user && (
+                    <MedicoHistoryAppointments medicoId={user.id} />
+                )}
             </div>
         </div>
     );

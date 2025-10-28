@@ -4,7 +4,12 @@ import { Navigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
 const PrivateRoute = ({ children, allowedRoles }) => {
-  const { user } = useContext(AuthContext);
+  const { user, loading } = useContext(AuthContext);
+
+  if (loading) {
+    // Mientras carga la sesión desde localStorage
+    return <div>Cargando...</div>; // o un spinner
+  }
 
   if (!user) {
     // Si no hay usuario logueado, redirige al login

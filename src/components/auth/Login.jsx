@@ -1,16 +1,35 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const { login } = useContext(AuthContext);
+  const { user, login } = useContext(AuthContext);
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
+
+  // Si ya hay sesión, redirige automáticamente según rol
+  useEffect(() => {
+    if (user) {
+      switch (user.rol_id) {
+        case "abc856dd-ba5f-41ae-8dea-27aa29f8ab47":
+          navigate("/patient");
+          break;
+        case "b20c6894-e11b-41aa-864a-b642b94682c1":
+          navigate("/admin");
+          break;
+        case "5770e7d5-c449-4094-bbe1-fd52ee6fe75f":
+          navigate("/medico");
+          break;
+        default:
+          navigate("/login");
+      }
+    }
+  }, [user, navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -24,18 +43,24 @@ const Login = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      const { access_token, user } = res.data;
-      login(user, access_token);
+      const { access_token, token_expiration, user } = res.data;
 
-      setMessage(`¡Bienvenido, ${user.nombre}!`);
-      setEmail("");
-      setPassword("");
+      // Guardar sesión
+      login(user, access_token, token_expiration);
 
+      // Redirige según rol
       switch (user.rol_id) {
-        case "abc856dd-ba5f-41ae-8dea-27aa29f8ab47": navigate("/patient"); break;
-        case "b20c6894-e11b-41aa-864a-b642b94682c1": navigate("/admin"); break;
-        case "5770e7d5-c449-4094-bbe1-fd52ee6fe75f": navigate("/medico"); break;
-        default: navigate("/login"); break;
+        case "abc856dd-ba5f-41ae-8dea-27aa29f8ab47":
+          navigate("/patient");
+          break;
+        case "b20c6894-e11b-41aa-864a-b642b94682c1":
+          navigate("/admin");
+          break;
+        case "5770e7d5-c449-4094-bbe1-fd52ee6fe75f":
+          navigate("/medico");
+          break;
+        default:
+          navigate("/login");
       }
     } catch (err) {
       console.error(err);
