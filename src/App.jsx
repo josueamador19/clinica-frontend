@@ -4,6 +4,8 @@ import PrivateRoute from "./routes/PrivateRoute";
 import PatientPanel from "./pages/PatientPanel"; 
 import MedicoPanel from "./pages/MedicoPanel";
 import AuthPage from "./pages/AuthPage";
+import AdminPanel from "./pages/AdminPanel";
+import LandingPage from "./pages/LandingPage";
 // import AdminDashboard from "./components/admin/AdminDashboard";
 
 function App() {
@@ -11,7 +13,8 @@ function App() {
     <Router>
       <Routes>
         {/*Ruta pública principal (Login / Registro en la misma página) */}
-        <Route path="/" element={<AuthPage />} />
+        <Route path="/" element={<LandingPage/>} />
+        <Route path="/auth" element={<AuthPage />} />
 
         {/*Rutas privadas para Paciente */}
         <Route
@@ -34,14 +37,14 @@ function App() {
         />
 
         {/*  Rutas privadas para Admin */}
-        {/* <Route
+        <Route
           path="/admin/*"
           element={
             <PrivateRoute allowedRoles={["b20c6894-e11b-41aa-864a-b642b94682c1"]}>
-              <AdminDashboard />
+              <AdminPanel />
             </PrivateRoute>
           }
-        /> */}
+        /> 
       </Routes>
     </Router>
   );
