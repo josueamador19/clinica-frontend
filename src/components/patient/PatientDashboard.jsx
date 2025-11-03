@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 
 const PatientDashboard = () => {
-  const { user } = useContext(AuthContext); // Obtenemos el usuario logueado
+  const { user } = useContext(AuthContext); 
 
   return (
     <div className="container mt-5">

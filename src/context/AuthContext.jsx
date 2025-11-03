@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
       setToken(storedToken);
       setUser(JSON.parse(storedUser));
     }
-    setLoading(false); // <--- carga completa
+    setLoading(false); 
   }, []);
 
   const login = (userData, accessToken, expiration) => {

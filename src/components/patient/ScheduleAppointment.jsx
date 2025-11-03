@@ -89,7 +89,6 @@ const ScheduleAppointment = () => {
       setDisponibilidad([]);
       setSucursales([]);
     } catch (err) {
-      // Mostrar mensaje específico si el médico ya tiene cita en esa hora
       const errorMsg = err.response?.data?.error;
       if (errorMsg?.includes("no está disponible")) {
         setMessage("El médico ya tiene una cita pendiente en esa fecha, hora y sucursal seleccionadas");
