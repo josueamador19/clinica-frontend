@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import MedicoAppointmentCard from "./MedicoAppointmentCard";
+import { backendUrl } from "../../services/api";
 
 const MedicoHistoryAppointments = ({ medicoId }) => {
   const [historial, setHistorial] = useState([]);
   const [filtro, setFiltro] = useState("todas");
-  const backendUrl = "http://localhost:8000";
+
 
   useEffect(() => {
     const fetchHistorial = async () => {

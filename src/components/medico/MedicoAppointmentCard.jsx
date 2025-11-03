@@ -1,8 +1,8 @@
 import React from "react";
 import axios from "axios";
-
+import { backendUrl } from "../../services/api";
 const MedicoAppointmentCard = ({ cita, onUpdate }) => {
-    const backendUrl = "http://localhost:8000";
+
 
     const handleCancel = async () => {
         if (!window.confirm("¿Seguro que deseas cancelar esta cita?")) return;

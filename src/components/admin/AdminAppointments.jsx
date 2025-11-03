@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { CalendarDays, Clock, User, Stethoscope } from "lucide-react";
 import axios from "axios";
 import { Modal, Button, Form, Spinner, Alert } from "react-bootstrap";
+import { backendUrl } from "../../services/api";
 
 const getMinDate = () => {
   const today = new Date();
@@ -33,7 +34,6 @@ const AdminAppointments = () => {
   const [filterSucursal, setFilterSucursal] = useState("");
   const [filterEstado, setFilterEstado] = useState("");
 
-  const backendUrl = "http://localhost:8000";
 
   useEffect(() => {
     const fetchData = async () => {

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import MedicoAppointmentCard from "./MedicoAppointmentCard";
+import { backendUrl } from "../../services/api";
 
 const MedicoUpcomingAppointments = ({ medicoId }) => {
     const [citas, setCitas] = useState([]);
-    const backendUrl = "http://localhost:8000";
 
     useEffect(() => {
         const fetchCitas = async () => {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Card, Modal, Button, Row, Col, Spinner, Alert } from "react-bootstrap";
 import { Users, Mail, Phone } from "lucide-react";
 import { motion } from "framer-motion";
+import { backendUrl } from "../../services/api";
 
 const AdminCardList = ({ title, icon, endpoint, colorClass }) => {
     const [items, setItems] = useState([]);
@@ -10,7 +11,7 @@ const AdminCardList = ({ title, icon, endpoint, colorClass }) => {
     const [showModal, setShowModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
 
-    const backendUrl = "http://localhost:8000";
+
 
     useEffect(() => {
         const fetchItems = async () => {

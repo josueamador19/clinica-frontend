@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { backendUrl } from "../../services/api";
 
 const Register = ({ hideTitle = false }) => { 
     const [nombre, setNombre] = useState("");
@@ -21,7 +22,7 @@ const Register = ({ hideTitle = false }) => {
     useEffect(() => {
         const fetchRoles = async () => {
             try {
-                const res = await axios.get("http://localhost:8000/roles");
+                const res = await axios.get(`${backendUrl}/roles`);
                 setRolesOptions(res.data);
                 // Intenta seleccionar el primer rol, o el rol de 'paciente' si existe un identificador conocido
                 const pacienteRol = res.data.find(r => r.nombre.toLowerCase() === 'paciente') || res.data[0];
@@ -31,7 +32,7 @@ const Register = ({ hideTitle = false }) => {
         };
         const fetchSucursales = async () => {
             try {
-                const res = await axios.get("http://localhost:8000/sucursales");
+                const res = await axios.get(`${backendUrl}/sucursales`);
                 setSucursalesOptions(res.data);
                 if (res.data.length > 0) setSucursal(res.data[0].id);
             } catch (err) { console.error(err); }
@@ -69,7 +70,7 @@ const Register = ({ hideTitle = false }) => {
             formData.append("sucursal_id", sucursal);
             if (foto) formData.append("foto", foto);
 
-            const res = await axios.post("http://localhost:8000/usuarios", formData, {
+            const res = await axios.post(`${backendUrl}/usuarios`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 

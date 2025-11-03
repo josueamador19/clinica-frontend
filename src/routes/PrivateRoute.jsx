@@ -7,8 +7,8 @@ const PrivateRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useContext(AuthContext);
 
   if (loading) {
-    // Mientras carga la sesión desde localStorage
-    return <div>Cargando...</div>; // o un spinner
+ 
+    return <div>Cargando...</div>; 
   }
 
   if (!user) {
