@@ -3,8 +3,11 @@ import {
     Stethoscope, LogIn, MapPin, Menu,
     CalendarPlus, History, Syringe, HeartPulse
 } from 'lucide-react';
+import { backendUrl } from "../services/api";
 
 const LandingPage = () => {
+    console.log("Backend URL:", backendUrl);
+
     useEffect(() => {
         const revealElements = document.querySelectorAll(".reveal, .map-wrapper");
         const observer = new IntersectionObserver(
