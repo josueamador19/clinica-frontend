@@ -4,7 +4,7 @@ import { CalendarDays, Clock, User, Stethoscope } from "lucide-react";
 import axios from "axios";
 import { Modal, Button, Form, Spinner, Alert } from "react-bootstrap";
 import { backendUrl } from "../../services/api";
-import { deployUrl } from "../../services/api";
+
 
 const getMinDate = () => {
   const today = new Date();
@@ -41,7 +41,7 @@ const AdminAppointments = () => {
       try {
         setLoading(true);
         const [citasRes, medicosRes] = await Promise.all([
-          axios.get(`${backendUrl}/citas/todas` || `${deployUrl}/citas/todas`),
+          axios.get(`${backendUrl}/citas/todas`),
           axios.get(`${backendUrl}/medicos`),
         ]);
         setCitas(citasRes.data);

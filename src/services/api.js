@@ -1,2 +1,5 @@
-export const backendUrl = "http://localhost:8000"; 
-export const deployUrl= "https://clinica-backend-w8rq.onrender.com/";
+const isProduction = import.meta.env.MODE === "production";
+
+export const backendUrl = isProduction
+  ? import.meta.env.VITE_API_URL  
+  : "http://localhost:8000";      
