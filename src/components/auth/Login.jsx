@@ -13,6 +13,7 @@ const Login = ({ hideTitle = false }) => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [message, setMessage] = useState("");
+    console.log("Backend URL:", backendUrl);
 
     // Si ya hay sesión, redirige automáticamente según rol
     useEffect(() => {
@@ -43,6 +44,7 @@ const Login = ({ hideTitle = false }) => {
 
             const res = await axios.post(`${backendUrl}/auth/login`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
+                
             });
 
             const { access_token, token_expiration, user } = res.data;
