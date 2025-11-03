@@ -4,6 +4,7 @@ import { Users, Mail, Phone } from "lucide-react";
 import { motion } from "framer-motion";
 import { backendUrl } from "../../services/api";
 
+
 const AdminCardList = ({ title, icon, endpoint, colorClass }) => {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);

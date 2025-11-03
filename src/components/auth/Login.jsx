@@ -5,6 +5,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { backendUrl } from "../../services/api";
+import { deployUrl } from "../../services/api";
 
 const Login = ({ hideTitle = false }) => { 
     const { user, login } = useContext(AuthContext);
@@ -41,7 +42,7 @@ const Login = ({ hideTitle = false }) => {
             formData.append("email", email);
             formData.append("password", password);
 
-            const res = await axios.post(`${backendUrl}/auth/login`, formData, {
+            const res = await axios.post(`${backendUrl}/auth/login`||`${deployUrl}/auth/login` , formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 
