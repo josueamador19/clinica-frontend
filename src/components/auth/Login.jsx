@@ -111,6 +111,7 @@ const Login = ({ hideTitle = false }) => {
                             onChange={(e) => setPassword(e.target.value)}
                             required
                             placeholder="********"
+                            maxLength={72}
                             style={{ 
                                 borderRight: 'none', 
                                 borderRadius: '8px 0 0 8px', 
