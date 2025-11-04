@@ -13,7 +13,6 @@ const Login = ({ hideTitle = false }) => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [message, setMessage] = useState("");
-    console.log("Backend URL:", backendUrl);
 
     // Si ya hay sesión, redirige automáticamente según rol
     useEffect(() => {

@@ -6,7 +6,6 @@ import {
 import { backendUrl } from "../services/api";
 
 const LandingPage = () => {
-    console.log("Backend URL:", backendUrl);
 
     useEffect(() => {
         const revealElements = document.querySelectorAll(".reveal, .map-wrapper");
