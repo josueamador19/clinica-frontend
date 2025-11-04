@@ -38,13 +38,12 @@ const Login = ({ hideTitle = false }) => {
         e.preventDefault();
         setMessage("");
         try {
-            const formData = new FormData();
-            formData.append("email", email);
-            formData.append("password", password);
-
-            const res = await axios.post(`${backendUrl}/auth/login`, formData, {
-                headers: { "Content-Type": "multipart/form-data" },
-                
+            // Ahora enviamos JSON en lugar de FormData
+            const res = await axios.post(`${backendUrl}/auth/login`, {
+                email: email.trim(),
+                password: password.trim()
+            }, {
+                headers: { "Content-Type": "application/json" },
             });
 
             const { access_token, token_expiration, user } = res.data;
@@ -68,17 +67,17 @@ const Login = ({ hideTitle = false }) => {
             }
         } catch (err) {
             console.error(err);
-            setMessage(err.response?.status === 401 ? "Credenciales inválidas." : err.response?.data?.error || "Error al iniciar sesión");
+            setMessage(
+                err.response?.status === 401 
+                ? "Credenciales inválidas." 
+                : err.response?.data?.error || "Error al iniciar sesión"
+            );
         }
     };
 
     return (
         <div className="login-form-content"> 
-            
-            <h2 
-                className="text-center fw-bold mb-4" 
-                style={{ color: "var(--clr-secondary)" }}
-            >
+            <h2 className="text-center fw-bold mb-4" style={{ color: "var(--clr-secondary)" }}>
                 Iniciar Sesión
             </h2>
             
@@ -144,8 +143,6 @@ const Login = ({ hideTitle = false }) => {
                     Ingresar
                 </button>
             </form>
-            
-            <div style={{ paddingBottom: '1px' }}></div> 
         </div>
     );
 };
