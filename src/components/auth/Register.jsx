@@ -11,14 +11,9 @@ const Register = ({ hideTitle = false }) => {
     const [passwordStrength, setPasswordStrength] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [rol, setRol] = useState("");
-    const [sucursal, setSucursal] = useState("");
-    const [telefono, setTelefono] = useState("");
-    const [foto, setFoto] = useState(null);
-    const [message, setMessage] = useState("");
     const [rolesOptions, setRolesOptions] = useState([]);
-    const [sucursalesOptions, setSucursalesOptions] = useState([]);
+    const [message, setMessage] = useState("");
 
-    // Obtener roles y sucursales desde backend
     useEffect(() => {
         const fetchRoles = async () => {
             try {
@@ -28,24 +23,14 @@ const Register = ({ hideTitle = false }) => {
                 if (pacienteRol) setRol(pacienteRol.id);
             } catch (err) { console.error(err); }
         };
-        const fetchSucursales = async () => {
-            try {
-                const res = await axios.get(`${backendUrl}/sucursales`);
-                setSucursalesOptions(res.data);
-                if (res.data.length > 0) setSucursal(res.data[0].id);
-            } catch (err) { console.error(err); }
-        };
         fetchRoles();
-        fetchSucursales();
     }, []);
 
-    // Validar email
     useEffect(() => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         setEmailValid(regex.test(email) || email === "");
     }, [email]);
 
-    // Evaluar fuerza de contraseña
     useEffect(() => {
         if (password.length === 0) setPasswordStrength("");
         else if (password.length < 6) setPasswordStrength("Muy corta (mínimo 6)");
@@ -54,21 +39,16 @@ const Register = ({ hideTitle = false }) => {
         else setPasswordStrength("Fuerte");
     }, [password]);
 
-    // Manejar registro
     const handleRegister = async (e) => {
         e.preventDefault();
-        setMessage("");
-
         if (!emailValid) return setMessage("Correo inválido");
-        if (password.length < 6) return setMessage("Contraseña mínima 6 caracteres");
-        if (!rol) return setMessage("Selecciona un rol"); 
+        if (password.length < 6) return setMessage("Contraseña mínima 6 caracteres"); 
 
         try {
-            // Preparar datos JSON
             const payload = {
                 nombre: nombre.trim(),
                 email: email.trim(),
-                password: password.trim(),
+                password: password.trim().slice(0,72), // truncar a 72 caracteres
                 rol: rol
             };
 
@@ -77,24 +57,8 @@ const Register = ({ hideTitle = false }) => {
             });
 
             setMessage(res.data.message || "Usuario registrado exitosamente. Por favor, inicia sesión.");
-
-            // Limpiar campos
-            setNombre(""); setEmail(""); setPassword(""); setTelefono("");
+            setNombre(""); setEmail(""); setPassword(""); setPasswordStrength("");
             setRol(rolesOptions.length > 0 ? rolesOptions[0].id : "");
-            setSucursal(sucursalesOptions.length > 0 ? sucursalesOptions[0].id : "");
-            setFoto(null); setPasswordStrength("");
-
-            // Subida de foto opcional
-            if (foto) {
-                const fotoData = new FormData();
-                fotoData.append("foto", foto);
-                try {
-                    await axios.post(`${backendUrl}/usuarios/${email}/foto`, fotoData, {
-                        headers: { "Content-Type": "multipart/form-data" },
-                    });
-                } catch (err) { console.error("Error al subir foto:", err); }
-            }
-
         } catch (err) {
             setMessage(err.response?.data?.error || err.message);
         }
@@ -102,31 +66,23 @@ const Register = ({ hideTitle = false }) => {
 
     return (
         <div className="register-form-content"> 
-            {!hideTitle && (
-                <h2 className="text-center fw-bold mb-4" style={{ color: "var(--clr-secondary)" }}>
-                    Registrarse
-                </h2>
-            )}
-            
+            <h2 className="text-center fw-bold mb-4" style={{ color: "var(--clr-secondary)" }}>Registrarse</h2>
             <form onSubmit={handleRegister}>
-                {/* Nombre */}
                 <div className="mb-3">
                     <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Nombre completo</label>
-                    <input type="text" className="form-control" value={nombre} onChange={e => setNombre(e.target.value)} required style={{ borderRadius: '8px', padding: '10px' }} />
+                    <input type="text" className="form-control" value={nombre} onChange={(e) => setNombre(e.target.value)} required style={{ borderRadius: '8px', padding: '10px' }} />
                 </div>
 
-                {/* Email */}
                 <div className="mb-3">
                     <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Correo electrónico</label>
-                    <input type="email" className={`form-control ${!emailValid && "is-invalid"}`} value={email} onChange={e => setEmail(e.target.value)} required style={{ borderRadius: '8px', padding: '10px' }} />
+                    <input type="email" className={`form-control ${!emailValid && "is-invalid"}`} value={email} onChange={(e) => setEmail(e.target.value)} required style={{ borderRadius: '8px', padding: '10px' }} />
                     {!emailValid && <div className="invalid-feedback">Correo inválido</div>}
                 </div>
 
-                {/* Contraseña */}
                 <div className="mb-3">
                     <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Contraseña</label>
                     <div className="input-group">
-                        <input type={showPassword ? "text" : "password"} className="form-control" value={password} onChange={e => setPassword(e.target.value)} required style={{ borderRight: 'none', borderRadius: '8px 0 0 8px', padding: '10px' }} />
+                        <input type={showPassword ? "text" : "password"} className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required maxLength={72} style={{ borderRight: 'none', borderRadius: '8px 0 0 8px', padding: '10px' }} />
                         <span className="input-group-text" style={{ cursor: "pointer", borderRadius: '0 8px 8px 0', backgroundColor: 'var(--clr-light)', borderColor: '#ced4da' }} onClick={() => setShowPassword(!showPassword)}>
                             {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
                         </span>
@@ -134,39 +90,16 @@ const Register = ({ hideTitle = false }) => {
                     {passwordStrength && <small className="text-muted">Contraseña: {passwordStrength}</small>}
                 </div>
 
-                {/* Rol y Sucursal */}
-                <div className="d-flex gap-3">
-                    <div className="mb-3 flex-grow-1">
-                        <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Rol</label>
-                        <select className="form-select" value={rol} onChange={e => setRol(e.target.value)} required style={{ borderRadius: '8px', padding: '10px' }}>
-                            {rolesOptions.map(r => <option key={r.id} value={r.id}>{r.nombre}</option>)}
-                        </select>
-                    </div>
-                    <div className="mb-3 flex-grow-1">
-                        <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Sucursal</label>
-                        <select className="form-select" value={sucursal} onChange={e => setSucursal(e.target.value)} required style={{ borderRadius: '8px', padding: '10px' }}>
-                            {sucursalesOptions.map(s => <option key={s.id} value={s.id}>{s.nombre}</option>)}
-                        </select>
-                    </div>
-                </div>
-
-                {/* Teléfono */}
                 <div className="mb-3">
-                    <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Teléfono</label>
-                    <input type="text" className="form-control" value={telefono} onChange={e => setTelefono(e.target.value)} style={{ borderRadius: '8px', padding: '10px' }} />
-                </div>
-
-                {/* Foto */}
-                <div className="mb-4">
-                    <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Foto de Perfil</label>
-                    <input type="file" className="form-control" onChange={e => setFoto(e.target.files[0])} accept="image/*" style={{ borderRadius: '8px', padding: '10px' }} />
+                    <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Rol</label>
+                    <select className="form-select" value={rol} onChange={(e) => setRol(e.target.value)} required style={{ borderRadius: '8px', padding: '10px' }}>
+                        {rolesOptions.map((r) => <option key={r.id} value={r.id}>{r.nombre}</option>)}
+                    </select>
                 </div>
 
                 {message && <p className="mt-3 text-center text-danger">{message}</p>}
 
-                <button type="submit" className="btn btn-success w-100 fw-bold" style={{ padding: '10px', borderRadius: '8px', marginTop: '15px' }}>
-                    Registrarse
-                </button>
+                <button type="submit" className="btn btn-success w-100 fw-bold" style={{ padding: '10px', borderRadius: '8px', marginTop: '15px' }}>Registrarse</button>
             </form>
         </div>
     );

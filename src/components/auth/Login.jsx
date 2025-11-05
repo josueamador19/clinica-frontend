@@ -1,4 +1,3 @@
-// Login.jsx
 import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
@@ -13,21 +12,16 @@ const Login = ({ hideTitle = false }) => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [message, setMessage] = useState("");
-    console.log("Backend URL:", backendUrl);
 
-    // Si ya hay sesión, redirige automáticamente según rol
     useEffect(() => {
         if (user) {
             switch (user.rol_id) {
                 case "abc856dd-ba5f-41ae-8dea-27aa29f8ab47":
-                    navigate("/patient");
-                    break;
+                    navigate("/patient"); break;
                 case "b20c6894-e11b-41aa-864a-b642b94682c1":
-                    navigate("/admin");
-                    break;
+                    navigate("/admin"); break;
                 case "5770e7d5-c449-4094-bbe1-fd52ee6fe75f":
-                    navigate("/medico");
-                    break;
+                    navigate("/medico"); break;
                 default:
                     navigate("/login");
             }
@@ -38,30 +32,23 @@ const Login = ({ hideTitle = false }) => {
         e.preventDefault();
         setMessage("");
         try {
-            // Ahora enviamos JSON en lugar de FormData
             const res = await axios.post(`${backendUrl}/auth/login`, {
                 email: email.trim(),
-                password: password.trim()
+                password: password.trim().slice(0, 72), 
             }, {
                 headers: { "Content-Type": "application/json" },
             });
 
             const { access_token, token_expiration, user } = res.data;
-
-            // Guardar sesión
             login(user, access_token, token_expiration);
 
-            // Redirige según rol
             switch (user.rol_id) {
                 case "abc856dd-ba5f-41ae-8dea-27aa29f8ab47":
-                    navigate("/patient");
-                    break;
+                    navigate("/patient"); break;
                 case "b20c6894-e11b-41aa-864a-b642b94682c1":
-                    navigate("/admin");
-                    break;
+                    navigate("/admin"); break;
                 case "5770e7d5-c449-4094-bbe1-fd52ee6fe75f":
-                    navigate("/medico");
-                    break;
+                    navigate("/medico"); break;
                 default:
                     navigate("/login");
             }
@@ -77,57 +64,19 @@ const Login = ({ hideTitle = false }) => {
 
     return (
         <div className="login-form-content"> 
-            <h2 className="text-center fw-bold mb-4" style={{ color: "var(--clr-secondary)" }}>
-                Iniciar Sesión
-            </h2>
+            <h2 className="text-center fw-bold mb-4" style={{ color: "var(--clr-secondary)" }}>Iniciar Sesión</h2>
             
             <form onSubmit={handleLogin}>
-                {/* Correo electrónico */}
                 <div className="mb-3">
-                    <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>
-                        Correo electrónico
-                    </label>
-                    <input
-                        type="email"
-                        className="form-control"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        placeholder="ejemplo@gmail.com"
-                        style={{ borderRadius: '8px', padding: '10px' }}
-                    />
+                    <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Correo electrónico</label>
+                    <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="ejemplo@gmail.com" style={{ borderRadius: '8px', padding: '10px' }} />
                 </div>
 
-                {/* Contraseña */}
                 <div className="mb-3"> 
-                    <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>
-                        Contraseña
-                    </label>
+                    <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Contraseña</label>
                     <div className="input-group">
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            className="form-control"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            placeholder="********"
-                            maxLength={72}
-                            style={{ 
-                                borderRight: 'none', 
-                                borderRadius: '8px 0 0 8px', 
-                                padding: '10px' 
-                            }}
-                        />
-                        <span
-                            className="input-group-text"
-                            style={{ 
-                                cursor: "pointer", 
-                                borderRadius: '0 8px 8px 0',
-                                backgroundColor: 'var(--clr-light)', 
-                                borderColor: '#ced4da',
-                            }}
-                            onClick={() => setShowPassword(!showPassword)}
-                        >
+                        <input type={showPassword ? "text" : "password"} className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="********" maxLength={72} style={{ borderRight: 'none', borderRadius: '8px 0 0 8px', padding: '10px' }} />
+                        <span className="input-group-text" style={{ cursor: "pointer", borderRadius: '0 8px 8px 0', backgroundColor: 'var(--clr-light)', borderColor: '#ced4da' }} onClick={() => setShowPassword(!showPassword)}>
                             {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
                         </span>
                     </div>
@@ -135,14 +84,7 @@ const Login = ({ hideTitle = false }) => {
 
                 {message && <p className="mt-3 text-center text-danger">{message}</p>}
 
-                {/* Botón de Ingresar */}
-                <button 
-                    type="submit" 
-                    className="btn btn-primary w-100 fw-bold" 
-                    style={{ padding: '10px', borderRadius: '8px', marginTop: '15px' }}
-                >
-                    Ingresar
-                </button>
+                <button type="submit" className="btn btn-primary w-100 fw-bold" style={{ padding: '10px', borderRadius: '8px', marginTop: '15px' }}>Ingresar</button>
             </form>
         </div>
     );
