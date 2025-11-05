@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
@@ -62,7 +61,7 @@ const Register = ({ hideTitle = false }) => {
             const formData = new FormData();
             formData.append("nombre", nombre.trim());
             formData.append("email", email.trim());
-            formData.append("password", password.trim().slice(0, 72)); // ✅ Limite 72 caracteres
+            formData.append("password", password.trim().slice(0, 72));
             formData.append("rol", rol);
             formData.append("sucursal_id", sucursal);
             formData.append("telefono", telefono.trim());
@@ -93,62 +92,56 @@ const Register = ({ hideTitle = false }) => {
             )}
             
             <form onSubmit={handleRegister}>
-                {/* Nombre */}
                 <div className="mb-3">
                     <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Nombre completo</label>
-                    <input type="text" className="form-control" value={nombre} onChange={(e) => setNombre(e.target.value)} required style={{ borderRadius: '8px', padding: '10px' }} />
+                    <input type="text" className="form-control" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
                 </div>
 
-                {/* Email */}
                 <div className="mb-3">
                     <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Correo electrónico</label>
-                    <input type="email" className={`form-control ${!emailValid && "is-invalid"}`} value={email} onChange={(e) => setEmail(e.target.value)} required style={{ borderRadius: '8px', padding: '10px' }} />
+                    <input type="email" className={`form-control ${!emailValid && "is-invalid"}`} value={email} onChange={(e) => setEmail(e.target.value)} required />
                     {!emailValid && <div className="invalid-feedback">Correo inválido</div>}
                 </div>
 
-                {/* Contraseña */}
                 <div className="mb-3">
                     <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Contraseña</label>
                     <div className="input-group">
-                        <input type={showPassword ? "text" : "password"} className="form-control" value={password} onChange={(e) => setPassword(e.target.value.slice(0,72))} required style={{ borderRight: 'none', borderRadius: '8px 0 0 8px', padding: '10px' }} maxLength={72} />
-                        <span className="input-group-text" style={{ cursor: "pointer", borderRadius: '0 8px 8px 0', backgroundColor: 'var(--clr-light)', borderColor: '#ced4da' }} onClick={() => setShowPassword(!showPassword)}>
-                            {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
+                        <input type={showPassword ? "text" : "password"} className="form-control" value={password} onChange={(e) => setPassword(e.target.value.slice(0,72))} required maxLength={72} />
+                        <span className="input-group-text" style={{ cursor: "pointer" }} onClick={() => setShowPassword(!showPassword)}>
+                            {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
                         </span>
                     </div>
                     {passwordStrength && <small className="text-muted">Contraseña: {passwordStrength}</small>}
                 </div>
 
-                {/* Rol, Sucursal, Teléfono y Foto */}
                 <div className="d-flex gap-3">
                     <div className="mb-3 flex-grow-1">
-                        <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Rol</label>
-                        <select className="form-select" value={rol} onChange={(e) => setRol(e.target.value)} required style={{ borderRadius: '8px', padding: '10px' }}>
+                        <label className="form-label fw-bold">Rol</label>
+                        <select className="form-select" value={rol} onChange={(e) => setRol(e.target.value)} required>
                             {rolesOptions.map((r) => <option key={r.id} value={r.id}>{r.nombre}</option>)}
                         </select>
                     </div>
                     <div className="mb-3 flex-grow-1">
-                        <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Sucursal</label>
-                        <select className="form-select" value={sucursal} onChange={(e) => setSucursal(e.target.value)} required style={{ borderRadius: '8px', padding: '10px' }}>
+                        <label className="form-label fw-bold">Sucursal</label>
+                        <select className="form-select" value={sucursal} onChange={(e) => setSucursal(e.target.value)} required>
                             {sucursalesOptions.map((s) => <option key={s.id} value={s.id}>{s.nombre}</option>)}
                         </select>
                     </div>
                 </div>
 
                 <div className="mb-3">
-                    <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Teléfono</label>
-                    <input type="text" className="form-control" value={telefono} onChange={(e) => setTelefono(e.target.value)} style={{ borderRadius: '8px', padding: '10px' }} />
+                    <label className="form-label fw-bold">Teléfono</label>
+                    <input type="text" className="form-control" value={telefono} onChange={(e) => setTelefono(e.target.value)} />
                 </div>
 
                 <div className="mb-4">
-                    <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Foto de Perfil</label>
-                    <input type="file" className="form-control" onChange={(e) => setFoto(e.target.files[0])} accept="image/*" style={{ borderRadius: '8px', padding: '10px' }} />
+                    <label className="form-label fw-bold">Foto de Perfil</label>
+                    <input type="file" className="form-control" onChange={(e) => setFoto(e.target.files[0])} accept="image/*" />
                 </div>
 
                 {message && <p className="mt-3 text-center text-danger">{message}</p>}
 
-                <button type="submit" className="btn btn-success w-100 fw-bold" style={{ padding: '10px', borderRadius: '8px', marginTop: '15px' }}>
-                    Registrarse
-                </button>
+                <button type="submit" className="btn btn-success w-100 fw-bold">Registrarse</button>
             </form>
         </div>
     );

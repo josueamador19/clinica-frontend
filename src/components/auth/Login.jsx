@@ -16,14 +16,10 @@ const Login = ({ hideTitle = false }) => {
     useEffect(() => {
         if (user) {
             switch (user.rol_id) {
-                case "abc856dd-ba5f-41ae-8dea-27aa29f8ab47":
-                    navigate("/patient"); break;
-                case "b20c6894-e11b-41aa-864a-b642b94682c1":
-                    navigate("/admin"); break;
-                case "5770e7d5-c449-4094-bbe1-fd52ee6fe75f":
-                    navigate("/medico"); break;
-                default:
-                    navigate("/login");
+                case "abc856dd-ba5f-41ae-8dea-27aa29f8ab47": navigate("/patient"); break;
+                case "b20c6894-e11b-41aa-864a-b642b94682c1": navigate("/admin"); break;
+                case "5770e7d5-c449-4094-bbe1-fd52ee6fe75f": navigate("/medico"); break;
+                default: navigate("/login");
             }
         }
     }, [user, navigate]);
@@ -32,25 +28,22 @@ const Login = ({ hideTitle = false }) => {
         e.preventDefault();
         setMessage("");
         try {
-            const res = await axios.post(`${backendUrl}/auth/login`, {
-                email: email.trim(),
-                password: password.trim(), // <-- ya no truncamos
-            }, {
-                headers: { "Content-Type": "application/json" },
+            const formData = new FormData();
+            formData.append("email", email.trim());
+            formData.append("password", password.trim());
+
+            const res = await axios.post(`${backendUrl}/auth/login`, formData, {
+                headers: { "Content-Type": "multipart/form-data" },
             });
 
             const { access_token, token_expiration, user } = res.data;
             login(user, access_token, token_expiration);
 
             switch (user.rol_id) {
-                case "abc856dd-ba5f-41ae-8dea-27aa29f8ab47":
-                    navigate("/patient"); break;
-                case "b20c6894-e11b-41aa-864a-b642b94682c1":
-                    navigate("/admin"); break;
-                case "5770e7d5-c449-4094-bbe1-fd52ee6fe75f":
-                    navigate("/medico"); break;
-                default:
-                    navigate("/login");
+                case "abc856dd-ba5f-41ae-8dea-27aa29f8ab47": navigate("/patient"); break;
+                case "b20c6894-e11b-41aa-864a-b642b94682c1": navigate("/admin"); break;
+                case "5770e7d5-c449-4094-bbe1-fd52ee6fe75f": navigate("/medico"); break;
+                default: navigate("/login");
             }
         } catch (err) {
             console.error(err);
@@ -64,31 +57,27 @@ const Login = ({ hideTitle = false }) => {
 
     return (
         <div className="login-form-content"> 
-            {!hideTitle && (
-                <h2 className="text-center fw-bold mb-4" style={{ color: "var(--clr-secondary)" }}>
-                    Iniciar Sesión
-                </h2>
-            )}
+            {!hideTitle && <h2 className="text-center fw-bold mb-4">Iniciar Sesión</h2>}
             
             <form onSubmit={handleLogin}>
                 <div className="mb-3">
-                    <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Correo electrónico</label>
-                    <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="ejemplo@gmail.com" style={{ borderRadius: '8px', padding: '10px' }} />
+                    <label className="form-label fw-bold">Correo electrónico</label>
+                    <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="ejemplo@gmail.com" />
                 </div>
 
                 <div className="mb-3"> 
-                    <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Contraseña</label>
+                    <label className="form-label fw-bold">Contraseña</label>
                     <div className="input-group">
-                        <input type={showPassword ? "text" : "password"} className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="********" style={{ borderRight: 'none', borderRadius: '8px 0 0 8px', padding: '10px' }} />
-                        <span className="input-group-text" style={{ cursor: "pointer", borderRadius: '0 8px 8px 0', backgroundColor: 'var(--clr-light)', borderColor: '#ced4da' }} onClick={() => setShowPassword(!showPassword)}>
-                            {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
+                        <input type={showPassword ? "text" : "password"} className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="********" />
+                        <span className="input-group-text" style={{ cursor: "pointer" }} onClick={() => setShowPassword(!showPassword)}>
+                            {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
                         </span>
                     </div>
                 </div>
 
                 {message && <p className="mt-3 text-center text-danger">{message}</p>}
 
-                <button type="submit" className="btn btn-primary w-100 fw-bold" style={{ padding: '10px', borderRadius: '8px', marginTop: '15px' }}>Ingresar</button>
+                <button type="submit" className="btn btn-primary w-100 fw-bold">Ingresar</button>
             </form>
         </div>
     );
