@@ -34,7 +34,7 @@ const Login = ({ hideTitle = false }) => {
         try {
             const res = await axios.post(`${backendUrl}/auth/login`, {
                 email: email.trim(),
-                password: password.trim().slice(0, 72), 
+                password: password.trim(), // <-- ya no truncamos
             }, {
                 headers: { "Content-Type": "application/json" },
             });
@@ -64,7 +64,11 @@ const Login = ({ hideTitle = false }) => {
 
     return (
         <div className="login-form-content"> 
-            <h2 className="text-center fw-bold mb-4" style={{ color: "var(--clr-secondary)" }}>Iniciar Sesión</h2>
+            {!hideTitle && (
+                <h2 className="text-center fw-bold mb-4" style={{ color: "var(--clr-secondary)" }}>
+                    Iniciar Sesión
+                </h2>
+            )}
             
             <form onSubmit={handleLogin}>
                 <div className="mb-3">
@@ -75,7 +79,7 @@ const Login = ({ hideTitle = false }) => {
                 <div className="mb-3"> 
                     <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Contraseña</label>
                     <div className="input-group">
-                        <input type={showPassword ? "text" : "password"} className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="********" maxLength={72} style={{ borderRight: 'none', borderRadius: '8px 0 0 8px', padding: '10px' }} />
+                        <input type={showPassword ? "text" : "password"} className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="********" style={{ borderRight: 'none', borderRadius: '8px 0 0 8px', padding: '10px' }} />
                         <span className="input-group-text" style={{ cursor: "pointer", borderRadius: '0 8px 8px 0', backgroundColor: 'var(--clr-light)', borderColor: '#ced4da' }} onClick={() => setShowPassword(!showPassword)}>
                             {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
                         </span>
