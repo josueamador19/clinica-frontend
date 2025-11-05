@@ -62,7 +62,7 @@ const Register = ({ hideTitle = false }) => {
             formData.append("nombre", nombre.trim());
             formData.append("email", email.trim());
             formData.append("password", password.trim().slice(0, 72));
-            formData.append("rol", rol);
+            formData.append("rol_id", rol);          // ✅ corregido
             formData.append("sucursal_id", sucursal);
             formData.append("telefono", telefono.trim());
             if (foto) formData.append("foto", foto);
@@ -93,18 +93,18 @@ const Register = ({ hideTitle = false }) => {
             
             <form onSubmit={handleRegister}>
                 <div className="mb-3">
-                    <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Nombre completo</label>
+                    <label className="form-label fw-bold">Nombre completo</label>
                     <input type="text" className="form-control" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
                 </div>
 
                 <div className="mb-3">
-                    <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Correo electrónico</label>
+                    <label className="form-label fw-bold">Correo electrónico</label>
                     <input type="email" className={`form-control ${!emailValid && "is-invalid"}`} value={email} onChange={(e) => setEmail(e.target.value)} required />
                     {!emailValid && <div className="invalid-feedback">Correo inválido</div>}
                 </div>
 
                 <div className="mb-3">
-                    <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Contraseña</label>
+                    <label className="form-label fw-bold">Contraseña</label>
                     <div className="input-group">
                         <input type={showPassword ? "text" : "password"} className="form-control" value={password} onChange={(e) => setPassword(e.target.value.slice(0,72))} required maxLength={72} />
                         <span className="input-group-text" style={{ cursor: "pointer" }} onClick={() => setShowPassword(!showPassword)}>
