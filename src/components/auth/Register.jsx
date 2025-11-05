@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
@@ -61,7 +62,7 @@ const Register = ({ hideTitle = false }) => {
             const formData = new FormData();
             formData.append("nombre", nombre.trim());
             formData.append("email", email.trim());
-            formData.append("password", password.trim());
+            formData.append("password", password.trim().slice(0, 72)); // ✅ Limite 72 caracteres
             formData.append("rol", rol);
             formData.append("sucursal_id", sucursal);
             formData.append("telefono", telefono.trim());
@@ -109,7 +110,7 @@ const Register = ({ hideTitle = false }) => {
                 <div className="mb-3">
                     <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Contraseña</label>
                     <div className="input-group">
-                        <input type={showPassword ? "text" : "password"} className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required style={{ borderRight: 'none', borderRadius: '8px 0 0 8px', padding: '10px' }} />
+                        <input type={showPassword ? "text" : "password"} className="form-control" value={password} onChange={(e) => setPassword(e.target.value.slice(0,72))} required style={{ borderRight: 'none', borderRadius: '8px 0 0 8px', padding: '10px' }} maxLength={72} />
                         <span className="input-group-text" style={{ cursor: "pointer", borderRadius: '0 8px 8px 0', backgroundColor: 'var(--clr-light)', borderColor: '#ced4da' }} onClick={() => setShowPassword(!showPassword)}>
                             {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
                         </span>
@@ -117,7 +118,7 @@ const Register = ({ hideTitle = false }) => {
                     {passwordStrength && <small className="text-muted">Contraseña: {passwordStrength}</small>}
                 </div>
 
-                {/* Rol y Sucursal */}
+                {/* Rol, Sucursal, Teléfono y Foto */}
                 <div className="d-flex gap-3">
                     <div className="mb-3 flex-grow-1">
                         <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Rol</label>
@@ -133,13 +134,11 @@ const Register = ({ hideTitle = false }) => {
                     </div>
                 </div>
 
-                {/* Teléfono */}
                 <div className="mb-3">
                     <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Teléfono</label>
                     <input type="text" className="form-control" value={telefono} onChange={(e) => setTelefono(e.target.value)} style={{ borderRadius: '8px', padding: '10px' }} />
                 </div>
 
-                {/* Foto */}
                 <div className="mb-4">
                     <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Foto de Perfil</label>
                     <input type="file" className="form-control" onChange={(e) => setFoto(e.target.files[0])} accept="image/*" style={{ borderRadius: '8px', padding: '10px' }} />
