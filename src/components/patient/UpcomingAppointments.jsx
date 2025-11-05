@@ -3,11 +3,12 @@ import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
 import AppointmentCard from "./AppointmentCard";
 
+import { backendUrl } from "../../services/api";
 const UpcomingAppointments = () => {
   const { user } = useContext(AuthContext);
   const [citas, setCitas] = useState([]);
   const [filtro, setFiltro] = useState("todas"); 
-  const backendUrl = "http://localhost:8000";
+
 
   useEffect(() => {
     const fetchCitas = async () => {

@@ -2,6 +2,8 @@ import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
 
+import { backendUrl } from "../../services/api";
+
 const ScheduleAppointment = () => {
   const { user } = useContext(AuthContext);
   const [medicos, setMedicos] = useState([]);
@@ -13,7 +15,6 @@ const ScheduleAppointment = () => {
   const [disponibilidad, setDisponibilidad] = useState([]);
   const [message, setMessage] = useState("");
 
-  const backendUrl = "http://localhost:8000";
 
   // Cargar médicos
   useEffect(() => {
