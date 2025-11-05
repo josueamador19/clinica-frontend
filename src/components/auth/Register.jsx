@@ -1,3 +1,4 @@
+// Register.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
@@ -18,7 +19,6 @@ const Register = ({ hideTitle = false }) => {
     const [rolesOptions, setRolesOptions] = useState([]);
     const [sucursalesOptions, setSucursalesOptions] = useState([]);
 
-    // Cargar roles y sucursales
     useEffect(() => {
         const fetchRoles = async () => {
             try {
@@ -39,13 +39,11 @@ const Register = ({ hideTitle = false }) => {
         fetchSucursales();
     }, []);
 
-    // Validar email
     useEffect(() => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         setEmailValid(regex.test(email) || email === "");
     }, [email]);
 
-    // Evaluar fuerza de contraseña
     useEffect(() => {
         if (password.length === 0) setPasswordStrength("");
         else if (password.length < 6) setPasswordStrength("Muy corta (mínimo 6)");
@@ -61,20 +59,22 @@ const Register = ({ hideTitle = false }) => {
         if (!rol || !sucursal) return setMessage("Selecciona rol y sucursal"); 
 
         try {
-            const formData = new FormData();
-            formData.append("nombre", nombre);
-            formData.append("email", email);
-            formData.append("password", password.slice(0, 72)); // truncado a 72 caracteres
-            formData.append("telefono", telefono);
-            formData.append("rol_id", rol);
-            formData.append("sucursal_id", sucursal);
-            if (foto) formData.append("foto", foto);
+            // Si quieres subir foto, habría que usar FormData
+            const payload = {
+                nombre: nombre.trim(),
+                email: email.trim(),
+                password: password.trim(),
+                rol: rol,
+                sucursal_id: sucursal,
+                telefono: telefono.trim(),
+            };
 
-            const res = await axios.post(`${backendUrl}/usuarios`, formData, {
-                headers: { "Content-Type": "multipart/form-data" },
+            const res = await axios.post(`${backendUrl}/auth/register`, payload, {
+                headers: { "Content-Type": "application/json" },
             });
 
             setMessage(res.data.message || "Usuario registrado exitosamente. Por favor, inicia sesión.");
+            
             // Limpiar campos
             setNombre(""); setEmail(""); setPassword(""); setTelefono("");
             setRol(rolesOptions.length > 0 ? rolesOptions[0].id : "");
@@ -90,8 +90,8 @@ const Register = ({ hideTitle = false }) => {
             <h2 className="text-center fw-bold mb-4" style={{ color: "var(--clr-secondary)" }}>
                 Registrarse
             </h2>
+            
             <form onSubmit={handleRegister}>
-                {/* Nombre */}
                 <div className="mb-3">
                     <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Nombre completo</label>
                     <input 
@@ -104,7 +104,6 @@ const Register = ({ hideTitle = false }) => {
                     />
                 </div>
 
-                {/* Email */}
                 <div className="mb-3">
                     <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Correo electrónico</label>
                     <input
@@ -118,7 +117,6 @@ const Register = ({ hideTitle = false }) => {
                     {!emailValid && <div className="invalid-feedback">Correo inválido</div>}
                 </div>
 
-                {/* Contraseña */}
                 <div className="mb-3">
                     <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Contraseña</label>
                     <div className="input-group">
@@ -128,7 +126,6 @@ const Register = ({ hideTitle = false }) => {
                             value={password} 
                             onChange={(e) => setPassword(e.target.value)} 
                             required 
-                            maxLength={72}
                             style={{ borderRight: 'none', borderRadius: '8px 0 0 8px', padding: '10px' }}
                         />
                         <span 
@@ -142,7 +139,6 @@ const Register = ({ hideTitle = false }) => {
                     {passwordStrength && <small className="text-muted">Contraseña: {passwordStrength}</small>}
                 </div>
 
-                {/* Rol y Sucursal */}
                 <div className="d-flex gap-3">
                     <div className="mb-3 flex-grow-1">
                         <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Rol</label>
@@ -170,7 +166,6 @@ const Register = ({ hideTitle = false }) => {
                     </div>
                 </div>
 
-                {/* Teléfono */}
                 <div className="mb-3">
                     <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Teléfono</label>
                     <input 
@@ -178,18 +173,6 @@ const Register = ({ hideTitle = false }) => {
                         className="form-control" 
                         value={telefono} 
                         onChange={(e) => setTelefono(e.target.value)} 
-                        style={{ borderRadius: '8px', padding: '10px' }}
-                    />
-                </div>
-
-                {/* Foto */}
-                <div className="mb-4">
-                    <label className="form-label fw-bold" style={{ color: "var(--clr-dark)" }}>Foto de Perfil</label>
-                    <input 
-                        type="file" 
-                        className="form-control" 
-                        onChange={(e) => setFoto(e.target.files[0])} 
-                        accept="image/*"
                         style={{ borderRadius: '8px', padding: '10px' }}
                     />
                 </div>
