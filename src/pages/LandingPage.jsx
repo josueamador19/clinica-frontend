@@ -6,7 +6,7 @@ import {
 import { backendUrl } from "../services/api";
 
 const LandingPage = () => {
-    console.log("Backend URL:", backendUrl);
+    //console.log("Backend URL:", backendUrl);
 
     useEffect(() => {
         const revealElements = document.querySelectorAll(".reveal, .map-wrapper");
@@ -148,11 +148,9 @@ const LandingPage = () => {
             <section className="hero" id="hero">
                 <div className="container">
                     <h1>
-                        Farmacia&nbsp;<span className="accent">Buena Salud</span>
+                        Clinica&nbsp;<span className="accent">Buena Salud</span>
                     </h1>
-                    <p>
-                        Más de 20 años cuidando de ti y tu familia ― siempre cerca, siempre confiables.
-                    </p>
+                    
                     <a href="#servicios" className="btn-cta">
                         Conoce nuestros servicios
                     </a>
